@@ -12,7 +12,7 @@ A =  abs(H);
 phi = angle(H);
 
 for f = 1:numel(f0)
-   disp("f_0 =  " + num2str(f0(f)) + " - A(" + num2str(f) + ") :" + num2str(A(f)) + " phi("+ num2str(f) +") :" + num2str(phi(f))); 
+   disp("f_0 =  " + num2str(f0(f)) + " - A(" + num2str(f) + ") :" + num2str(A(f)) + " phi("+ num2str(f) +") :" + num2str(phi(f)*(360/(2*pi)))); 
 end
 
 %% V2c
@@ -42,63 +42,4 @@ title("Systemantwort RC-TP auf rect");
 xlabel("t");
 ylabel("u(t)");
 legend(plots)
-
-%% A1
-
-clc;
-clearvars;
-
-% Verlauf der Sprungantwort bei Ansteuerung mit Approximaxion von einem
-% Dirac
-
-tau = 1;
-U = 1;
-Tx = 1;
-
-t = linspace(0, 6*tau, 6*256);                                   %Zeitvektor mit 256 Schritten pro tau
-
-% Berchnen des Ausgangssignals mit Dirac mit variabler Pulslänge
-for n = 1:8
-    
-    Tn = tau / (2^(n-1));                                        %Verkleinerung der Impulsbreite
-    
-    %Uy aus Praktikum 1
-    Utn = U * Tx * (1/Tn) * (1-exp(-Tn/ tau) );                  %Spannung bei Uy(tn)
-    
-    uy = (t<=Tn) .* U .* Tx .* (1/Tn) .* (1-exp(-t/ tau) )...    %Ladefunktion
-        + (t > Tn).* Utn .* exp(-(t - Tn) / tau);                %Entladefunktion <- richtig baba!
-    
-    h = (1/tau) .* exp(-t/tau);
-    %h = heaviside(t) .* (1/tau) .* exp(-t/tau);
-    
-   %Grafikausgabe
-   figure(1)                                                     %Öffnen eines Plot-Fensters
-   plot(t,uy, t,h)                                               %Ausgabe aller Werte               
-   xlabel('tau');                                                %Beschriftung x-Achse
-   ylabel('U(y) in V');                                          %Beschriftung y-Achse
-   title(sprintf("Aufgabe A1: h(t) und Uy(t) pulsbreite tau/%d ", 2^(n-1))); %Titel der Grafik
-   grid on;  
-   legend('Uy(t) aus P1','h(t)*U*dirac(t)*Tx');
-   pause(1.5);                                                   %Pause zum "Halten" des jeweiligen Plots
-end
-
-
-%% A2
-
-clc;
-clearvars;
-
-
-tau = 1;
-T1 = tau;
-U = 1;
-t = linspace(0, 6*tau, 6*256);                                   %Zeitvektor mit 256 Schritten pro tau
-
-ux = U * rectangularPulse((t-T1/2)/T1);
-h = (1/tau) * exp(-t/tau);
-
-uy = conv(ux, h, 'same');
-
-plot(t, ux, t, uy, t, h);
-
 
